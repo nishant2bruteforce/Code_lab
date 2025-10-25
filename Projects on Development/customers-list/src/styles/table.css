@@ -1,0 +1,93 @@
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto; /* allow columns to adjust naturally */
+}
+
+th, td {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+  vertical-align: middle;
+}
+
+th {
+  cursor: pointer;
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Customer Name column with image and text */
+td.customer-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 200px;
+}
+
+td.customer-name img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+td.customer-name div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+td.customer-name strong {
+  font-weight: bold;
+}
+
+/* Controls (search & dropdown) spacing */
+.controls {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+/* Scrollable container for large tables */
+.container {
+  overflow-x: auto;
+}
+
+/* Optional: checkbox column alignment */
+td:first-child,
+th:first-child {
+  text-align: center;
+  width: 40px;
+}
+
+/* Score column */
+td.score,
+th.score {
+  width: 60px;
+  text-align: center;
+}
+
+/* Email column */
+td.email,
+th.email {
+  min-width: 200px;
+}
+
+/* Last Message column */
+td.lastMessage,
+th.lastMessage {
+  min-width: 120px;
+}
+
+/* Added By column */
+td.addedBy,
+th.addedBy {
+  min-width: 150px;
+}
