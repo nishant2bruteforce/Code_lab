@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Socket.IO</title>
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+      #messages { list-style-type: none; margin: 0; padding: 0; flex-grow: 1; overflow-y: auto; padding: 12px; }
+      #messages > li { padding: 8px 12px; margin-bottom: 8px; border-radius: 8px; }
+      #messages > li:nth-child(odd) { background: #efefef; }
+      
+      #messages > li.system { 
+        background: #fffbe6; 
+        color: #8a6d3b;      
+        font-style: italic; 
+        text-align: center;
+      }
+      
+      #messages > li .username {
+        font-weight: bold;
+        color: #333;
+        margin-right: 4px;
+      }
+
+      #form { background: rgba(0, 0, 0, 0.1); padding: 12px; display: flex; }
+      #input { border: none; padding: 12px; flex-grow: 1; border-radius: 20px; margin-right: 12px; }
+      #form > button { background: #333; color: white; border: none; padding: 12px 20px; border-radius: 20px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <!-- The list where messages will appear -->
+    <ul id="messages"></ul>
+
+    <!-- The form to send a message -->
+    <form id="form" action="">
+      <input id="input" autocomplete="off" placeholder="Type a message..." />
+      <button>Send</button>
+    </form>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
