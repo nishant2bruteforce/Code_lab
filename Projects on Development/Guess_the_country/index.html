@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guess the Flag</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f5f5f5;
+    color: #121212;
+    margin: 0;
+    padding: 20px;
+    transition: background 0.3s, color 0.3s;
+  }
+  h1 { margin-bottom: 20px; color: #0077cc; text-shadow: 1px 1px 8px rgba(0,119,204,0.6); }
+  .flag-container img { width: 250px; height: 150px; border: 3px solid #0077cc; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 0 15px rgba(0,119,204,0.4); transition: border 0.3s, box-shadow 0.3s; }
+  .options { display: flex; flex-direction: column; gap: 12px; max-width: 320px; margin: auto; }
+  button { padding: 12px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; background: #e0e0e0; color: #121212; transition: 0.3s; border: 1px solid #0077cc; }
+  button:hover { background: #0077cc; color: #f5f5f5; font-weight: bold; }
+  .result, .status, .timer { transition: color 0.3s; }
+  .timer { font-size: 20px; margin: 10px 0; color: #ff4444; }
+  body.dark-mode { background: #121212; color: #f5f5f5; }
+  body.dark-mode h1 { color: #00d4ff; text-shadow: 1px 1px 8px rgba(0,212,255,0.6); }
+  body.dark-mode .flag-container img { border: 3px solid #00d4ff; box-shadow: 0 0 15px rgba(0,212,255,0.4); }
+  body.dark-mode button { background: #1f1f1f; color: #f5f5f5; border: 1px solid #00d4ff; }
+  body.dark-mode button:hover { background: #00d4ff; color: #121212; }
+  #toggleMode { position: fixed; top: 10px; right: 10px; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; background: #0077cc; color: #fff; transition: background 0.3s; z-index: 1000; }
+  #toggleMode:hover { background: #005fa3; }
+  body.dark-mode #toggleMode { background: #00d4ff; color: #121212; }
+  body.dark-mode #toggleMode:hover { background: #009fcc; }
+
+  /* Confetti styles */
+  .confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: #ff0;
+    pointer-events: none;
+    animation: fall 1s linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(600px) rotate(360deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<button id="toggleMode">Toggle Dark Mode</button>
+
+<h1>Guess the Flag!</h1>
+
+<div class="flag-container">
+  <img id="flag" src="" alt="Flag">
+</div>
+
+<div class="options">
+  <button onclick="checkAnswer(this)"></button>
+  <button onclick="checkAnswer(this)"></button>
+  <button onclick="checkAnswer(this)"></button>
+  <button onclick="checkAnswer(this)"></button>
+</div>
+
+<p class="result" id="result"></p>
+<p class="status" id="score">Score: 0</p>
+<p class="status" id="highScore">High Score: 0</p>
+<p class="status" id="level">Level: 1</p>
+<p class="timer" id="timer">Time left: 10s</p>
+
+<script>
+  // Dark Mode Toggle
+  const toggleButton = document.getElementById('toggleMode');
+  const body = document.body;
+  if(localStorage.getItem('darkMode') === 'enabled'){ body.classList.add('dark-mode'); }
+  toggleButton.addEventListener('click', () => {
+    body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+  });
+
+  // Flag Game Logic
+  const flags = [
+    { country: "India", img: "https://flagcdn.com/w320/in.png" },
+    { country: "United States", img: "https://flagcdn.com/w320/us.png" },
+    { country: "Japan", img: "https://flagcdn.com/w320/jp.png" },
+    { country: "Brazil", img: "https://flagcdn.com/w320/br.png" },
+    { country: "Germany", img: "https://flagcdn.com/w320/de.png" },
+    { country: "France", img: "https://flagcdn.com/w320/fr.png" },
+    { country: "United Kingdom", img: "https://flagcdn.com/w320/gb.png" },
+    { country: "Canada", img: "https://flagcdn.com/w320/ca.png" },
+    { country: "Italy", img: "https://flagcdn.com/w320/it.png" },
+    { country: "Australia", img: "https://flagcdn.com/w320/au.png" }
+  ];
+
+  let currentFlag, score = 0, level = 1, streak = 0;
+  let highScore = localStorage.getItem('highScore') || 0;
+  document.getElementById('highScore').textContent = "High Score: " + highScore;
+  const timeLimit = 10; let timer, timeLeft;
+
+  function createConfetti() {
+    for(let i=0; i<30; i++){
+      const c = document.createElement('div');
+      c.classList.add('confetti');
+      c.style.left = Math.random()*window.innerWidth + 'px';
+      c.style.backgroundColor = `hsl(${Math.random()*360}, 100%, 50%)`;
+      c.style.animationDuration = (Math.random()*1+0.5) + 's';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 1000);
+    }
+  }
+
+  function loadFlag() {
+    clearInterval(timer);
+    const randomFlag = flags[Math.floor(Math.random() * flags.length)];
+    currentFlag = randomFlag;
+    document.getElementById("flag").src = randomFlag.img;
+
+    let options = [randomFlag.country];
+    while(options.length < 4){
+      let rand = flags[Math.floor(Math.random()*flags.length)].country;
+      if(!options.includes(rand)) options.push(rand);
+    }
+    options.sort(() => Math.random() - 0.5);
+
+    document.querySelectorAll(".options button").forEach((btn, idx) => {
+      btn.textContent = options[idx];
+      btn.disabled = false;
+    });
+
+    document.getElementById("result").textContent = "";
+    timeLeft = timeLimit;
+    document.getElementById("timer").textContent = `Time left: ${timeLeft}s`;
+
+    timer = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer").textContent = `Time left: ${timeLeft}s`;
+      if(timeLeft <= 0){
+        clearInterval(timer);
+        streak = 0;
+        document.getElementById("result").textContent = `Time's up! It was ${currentFlag.country}`;
+        score = Math.max(0, score-1);
+        updateStatus();
+        setTimeout(loadFlag, 1500);
+      }
+    },1000);
+  }
+
+  function checkAnswer(button){
+    clearInterval(timer);
+    document.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+
+    if(button.textContent === currentFlag.country){
+      document.getElementById("result").textContent = "You are Correct!";
+      streak++;
+      score += 1 + Math.floor(streak/3); // Bonus for streak
+      createConfetti();
+    } else {
+      document.getElementById("result").textContent = `Wrong! It was ${currentFlag.country}`;
+      streak = 0;
+      score = Math.max(0, score-1);
+    }
+
+    if(score > highScore){
+      highScore = score;
+      localStorage.setItem('highScore', highScore);
+      document.getElementById('highScore').textContent = "High Score: " + highScore;
+    }
+
+    updateStatus();
+    setTimeout(loadFlag, 1500);
+  }
+
+  function updateStatus(){
+    document.getElementById("score").textContent = "Score: " + score;
+    level = Math.floor(score/5)+1;
+    document.getElementById("level").textContent = "Level: " + level;
+  }
+
+  loadFlag();
+</script>
+</body>
+</html>
