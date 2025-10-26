@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Whack-a-Mole</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Whack-a-Mole 🎯</h1>
+
+      <div class="info">
+        <div class="score">Score: <span id="score">0</span></div>
+        <div class="timer">Time: <span id="time">30</span>s</div>
+      </div>
+
+      <div class="controls">
+        <label for="duration">Duration:</label>
+        <select id="duration">
+          <option value="15">15s</option>
+          <option value="30" selected>30s</option>
+          <option value="45">45s</option>
+          <option value="60">60s</option>
+        </select>
+        <button id="start">Start</button>
+        <button id="reset">Reset</button>
+      </div>
+
+      <!-- Game board: 9 holes (3x3). Simple and responsive for beginners -->
+      <section class="board" id="board" aria-label="Whack a mole board"></section>
+
+      <footer class="notes">
+        Click the moles as they pop up. Faster clicks = more points!
+      </footer>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
